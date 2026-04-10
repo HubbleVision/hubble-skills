@@ -1,11 +1,11 @@
 ---
 name: hubble_pm_agent
-description: Query PM-Agent status from Hubble Market Server using an API key (read-only, Milestone 1).
+description: Query and control PM-Agent status from Hubble Market Server using an API key (read/write).
 ---
 
 # Hubble PM-Agent Skill
 
-Version: v0.1.0
+Version: v0.2.0
 
 ## When to use
 
@@ -16,9 +16,7 @@ Use this skill when the user asks about:
 - Starting or stopping the scheduler
 - Manually triggering a decision
 - Emergency close actions
-
-Milestone 1 scope: read-only (status only).
-Milestone 3+ scope: includes high-risk write actions (requires explicit confirmation).
+- Manual reconciliation
 
 ## Requirements
 
@@ -55,6 +53,14 @@ Call:
 
 - `POST /api/v1/agents/pm/{agent_id}/scheduler/start`
 
+Optional request body:
+
+```json
+{"interval_ms": <integer>}
+```
+
+If the user provides a custom interval (in milliseconds), include it in the body. Otherwise send an empty body or omit it.
+
 ### Action: Stop scheduler
 
 Call:
@@ -67,11 +73,25 @@ Call:
 
 - `POST /api/v1/agents/pm/{agent_id}/trigger`
 
+### Action: Trigger reconciliation
+
+Call:
+
+- `POST /api/v1/agents/pm/{agent_id}/reconcile`
+
+Triggers a manual reconciliation of the PM-Agent's positions via Position Manager. Use when positions may be out of sync.
+
 ### Action: Emergency close (all)
 
 Call:
 
 - `POST /api/v1/agents/pm/{agent_id}/emergency-close`
+
+Optional request body:
+
+```json
+{"reason": "<string>"}
+```
 
 ### Action: Emergency close (symbols)
 
@@ -83,6 +103,12 @@ Before calling:
 
 - Require a symbols list from the user.
 - Ensure each symbol is uppercase and slashless (e.g. `BTCUSDT`).
+
+Request body:
+
+```json
+{"symbols": ["BTCUSDT", "ETHUSDT"], "reason": "<optional>"}
+```
 
 ## Curl templates (copy-paste)
 
@@ -98,13 +124,14 @@ Get status (with validation):
   -H "Content-Type: application/json" \
   "$BASE/api/v1/agents/pm/$AGENT_ID/status"`
 
-Start scheduler:
+Start scheduler (with optional interval):
 
 - `curl -sS --fail-with-body \
   -H "Authorization: Bearer $HUBBLE_API_KEY" \
   -H "Content-Type: application/json" \
   -X POST \
-  "$BASE/api/v1/agents/pm/$AGENT_ID/scheduler/start"`
+  "$BASE/api/v1/agents/pm/$AGENT_ID/scheduler/start" \
+  -d '{"interval_ms": 60000}'`
 
 Stop scheduler:
 
@@ -121,6 +148,14 @@ Trigger:
   -H "Content-Type: application/json" \
   -X POST \
   "$BASE/api/v1/agents/pm/$AGENT_ID/trigger"`
+
+Reconcile:
+
+- `curl -sS --fail-with-body \
+  -H "Authorization: Bearer $HUBBLE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -X POST \
+  "$BASE/api/v1/agents/pm/$AGENT_ID/reconcile"`
 
 Emergency close (all):
 

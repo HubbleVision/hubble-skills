@@ -1,11 +1,11 @@
 ---
 name: hubble_runs
-description: Create and query agent runs from Hubble Market Server using an API key (free-only; no x402 automation).
+description: Create and query agent runs from Hubble Market Server using an API key, with x402 payment flow support.
 ---
 
 # Hubble Runs Skill
 
-Version: v0.1.0
+Version: v0.2.0
 
 ## When to use
 
@@ -14,8 +14,6 @@ Use this skill when the user asks about:
 - Running an agent
 - Checking run status
 - Listing recent runs
-
-This skill is intended for free agents only.
 
 ## Requirements
 
@@ -28,13 +26,31 @@ This skill is intended for free agents only.
 - Treat `agent_id` and `run_id` as untrusted input. Validate them before calling the API.
 - Validation rules:
   - `agent_id` must be UUID-like: `^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$`
-  - `run_id` should be treated as opaque; prefer UUID-like validation if it matches that format.
+  - `run_id`: treat as opaque; prefer UUID-like validation if it matches that format.
 - For `POST /runs`, repeat the action summary and wait for explicit user confirmation before calling the API.
 
 ## Payment / x402
 
-- This skill does not implement any x402/payment automation.
-- If the API responds with a payment challenge or indicates x402 is required, stop and tell the user that payment is not supported in this skill.
+Paid agents require a two-step flow:
+
+1. **First call** (no `X-PAYMENT` header): server creates a run record and returns **HTTP 402** with payment requirements (`payment_requirements`, `agent_run_id`, `payment_id`).
+2. **Second call** (with `X-PAYMENT` header): server verifies payment and triggers execution, returns HTTP 202.
+
+If the user asks to run a paid agent, explain the 402 flow. This skill does not automate the payment process itself—if the API returns 402, stop and report the payment requirements to the user.
+
+## Run response fields
+
+A run response includes:
+
+- `id`, `agent_id`, `requester_id`
+- `status`: run execution status (e.g. `pending`, `running`, `succeeded`, `failed`)
+- `task_state`: A2A task state (e.g. `created`, `accepted`, `executing`, `succeeded`, `failed`)
+- `payment_status`: payment state (e.g. `none`, `required`, `pending`, `confirmed`, `failed`)
+- `input_payload`, `output_payload`, `error_reason`
+- `created_at`, `started_at`, `finished_at`
+- `tx_hash`, `trans_url`: payment transaction hash and block explorer URL (if applicable)
+- `external_trace_id`, `bridge_latency_ms`: external agent trace info (if applicable)
+- `events`: list of run events (detail response only)
 
 ## Tools
 
@@ -67,6 +83,11 @@ Before calling:
 Call:
 
 - `GET /api/v1/agents/{agent_id}/runs`
+
+Query params (optional):
+
+- `limit` (default 10)
+- `offset` (default 0)
 
 Before calling:
 

@@ -1,23 +1,21 @@
 ---
 name: hubble_agents
-description: Read agent list and agent details from Hubble Market Server using an API key.
+description: Manage agents (PM agents and generic agents) on Hubble Market Server using an API key.
 ---
 
 # Hubble Agents Skill
 
-Version: v0.1.0
+Version: v0.2.0
 
 ## When to use
 
 Use this skill when the user asks about:
 
-- Listing agents
+- Listing PM agents
 - Viewing an agent's details
-- Creating an agent
-- Updating an agent
+- Creating a PM agent
+- Updating a PM agent
 - Deleting an agent
-
-Milestone 2+ scope: read-write (`list` / `get` / `create` / `update` / `delete`).
 
 ## Requirements
 
@@ -37,15 +35,50 @@ Milestone 2+ scope: read-write (`list` / `get` / `create` / `update` / `delete`)
 
 Use the `bash` tool to call the API.
 
-### Action: List agents
+## PM Agent Routes
+
+PM agents are trading agents managed by CF Worker. These are the primary agent type for users.
+
+### Action: List PM agents
 
 Call:
 
-- `GET /api/v1/agents`
+- `GET /api/v1/agents/pm`
 
-Default behavior:
+Summarize key fields: `id`, `name`, `created_at`, `agent_type`, status fields if present.
 
-- Request the list and summarize key fields (`id`, `name`, `created_at`, `owner`, status fields if present).
+Supports optional query params: `limit`, `offset`, `search`.
+
+### Action: Create PM agent
+
+Call:
+
+- `POST /api/v1/agents/pm`
+
+Before calling:
+
+- Ask for required fields: `name`, `exchange` (e.g. `weex`/`aster`/`mock`), `exchange_auth_type` (e.g. `api_key`/`web3`), `exchange_keys` (dict with API credentials).
+- Optional fields: `description`, `symbols` (list of trading symbols), `risk_limit` (0-1), `interval_ms`, `auto_start_scheduler`, `llm_provider_id`, `llm_model`, `system_prompt`, `risk_config`, `research_agent_ids`.
+- Show a brief summary of the request body and ask for confirmation.
+
+Error codes:
+- `409`: Symbol conflict with an existing PM agent on the same exchange.
+- `502`: CF Worker upstream error.
+
+### Action: Update PM agent
+
+Call:
+
+- `PUT /api/v1/agents/pm/{agent_id}`
+
+Before calling:
+
+- Validate `agent_id` format.
+- Note: `exchange`, `exchange_auth_type`, and `exchange_keys` are **not updatable**.
+- Updatable fields: `name`, `description`, `symbols`, `risk_limit`, `interval_ms`, `system_prompt`, `risk_config`, `llm_provider_id`, `llm_model`, `research_agent_ids`.
+- Summarize intended changes and ask for confirmation.
+
+## Generic Agent Routes
 
 ### Action: Get agent
 
@@ -57,23 +90,14 @@ Before calling:
 
 - Validate `agent_id` format.
 
-### Action: Create agent
+Note: Public agents do not require authentication. Unpublished agents require ownership.
+
+### Action: Update agent (generic)
 
 Call:
 
-- `POST /api/v1/agents`
-
-Before calling:
-
-- Ask the user for the minimal required fields.
-- Show a brief summary of the request body and ask for confirmation.
-
-### Action: Update agent
-
-Call:
-
-- `PUT /api/v1/agents/{agent_id}`
-- `PATCH /api/v1/agents/{agent_id}`
+- `PUT /api/v1/agents/{agent_id}` (full update)
+- `PATCH /api/v1/agents/{agent_id}` (partial update)
 
 Before calling:
 
@@ -96,7 +120,7 @@ Before calling:
 - `401`: API key missing/invalid/expired/disabled. Ask user to rotate key.
 - `403`: Authenticated but not allowed (not owner / permission). Ask user to check agent ownership.
 - `404`: Agent not found. Ask user to verify `agent_id`.
-- `409`: Conflict (if applicable). Ask user to re-fetch state and retry.
+- `409`: Conflict (symbol conflict for PM agents). Report the conflicting agents and symbols.
 - `5xx`: Server error. Retry once with backoff; if still failing, stop and report response body.
 
 ## Curl templates (copy-paste)
@@ -105,38 +129,44 @@ Normalize base URL:
 
 - `BASE="${HUBBLE_API_BASE_URL%/}"`
 
-List:
+Validate agent_id:
+
+- `if [[ ! "$AGENT_ID" =~ ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$ ]]; then echo "Invalid agent_id"; exit 2; fi`
+
+List PM agents:
 
 - `curl -sS --fail-with-body \
   -H "Authorization: Bearer $HUBBLE_API_KEY" \
   -H "Content-Type: application/json" \
-  "$BASE/api/v1/agents"`
+  "$BASE/api/v1/agents/pm"`
 
-Get (with validation):
+Get agent:
 
-- `if [[ ! "$AGENT_ID" =~ ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$ ]]; then echo "Invalid agent_id"; exit 2; fi`
 - `curl -sS --fail-with-body \
   -H "Authorization: Bearer $HUBBLE_API_KEY" \
   -H "Content-Type: application/json" \
   "$BASE/api/v1/agents/$AGENT_ID"`
 
-Create:
+Create PM agent:
 
 - `curl -sS --fail-with-body \
   -H "Authorization: Bearer $HUBBLE_API_KEY" \
   -H "Content-Type: application/json" \
   -X POST \
-  "$BASE/api/v1/agents" \
+  "$BASE/api/v1/agents/pm" \
   -d "$BODY"`
 
-Update (PUT/PATCH):
+Update PM agent:
 
 - `curl -sS --fail-with-body \
   -H "Authorization: Bearer $HUBBLE_API_KEY" \
   -H "Content-Type: application/json" \
   -X PUT \
-  "$BASE/api/v1/agents/$AGENT_ID" \
+  "$BASE/api/v1/agents/pm/$AGENT_ID" \
   -d "$BODY"`
+
+Update generic agent (PATCH):
+
 - `curl -sS --fail-with-body \
   -H "Authorization: Bearer $HUBBLE_API_KEY" \
   -H "Content-Type: application/json" \
