@@ -5,7 +5,7 @@ description: Use when the user asks to list, view, create, update, or delete age
 
 # Hubble Agents Skill
 
-Version: v0.3.0
+Version: v0.3.1
 
 ## When to use
 
@@ -250,7 +250,7 @@ curl -sS --fail-with-body \
 | 状态值 | 含义 |
 |---|---|
 | `pending` | 等待处理 |
-| `running` | 正在构建/部署 |
+| `deploying` | 正在构建/部署 |
 | `completed` / `deployed` | ✅ 部署成功，Agent 可用 |
 | `failed` | ❌ 部署失败，查看响应中的 `error` 字段 |
 
@@ -263,6 +263,20 @@ curl -sS \
   -H "Authorization: Bearer $HUBBLE_API_KEY" \
   "$BASE/api/v1/agents/user-research/jobs/$JOB_ID/logs"
 ```
+
+---
+
+### 查询可用数据源
+
+创建 Agent 前调用，列出平台支持的所有数据源，供用户选择 `datasource_ids`。
+
+```bash
+curl -sS --fail-with-body \
+  -H "Authorization: Bearer $HUBBLE_API_KEY" \
+  "$BASE/api/v1/agents/user-research/data-sources"
+```
+
+每条记录包含 `id`（填入请求体）、`name`（展示名）和 `params`（配置参数）。
 
 ---
 
@@ -398,4 +412,7 @@ curl -sS --fail-with-body \
 | `403` | Not owner or no permission. |
 | `404` | Agent not found. Verify `agent_id`. |
 | `409` | Symbol conflict for PM agents. Report conflicting agents/symbols. |
+| `502` | (User Research) Creator auth failure (`X-Hubble-Auth-Key` wrong) or Creator returned 5xx/connection error. |
+| `503` | (User Research) `RESEARCH_CREATOR_BASE_URL` not configured on server. |
+| `504` | (User Research) Creator request timed out (default 30s). |
 | `5xx` | Server error. Retry once; if still failing, report body. |

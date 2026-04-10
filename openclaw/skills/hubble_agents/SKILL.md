@@ -5,7 +5,7 @@ description: Manage agents (PM agents, User Research agents, and generic agents)
 
 # Hubble Agents Skill
 
-Version: v0.3.0
+Version: v0.3.1
 
 ## When to use
 
@@ -224,7 +224,7 @@ Call:
 | 状态值 | 含义 |
 |---|---|
 | `pending` | 等待处理 |
-| `running` | 正在构建/部署 |
+| `deploying` | 正在构建/部署 |
 | `completed` / `deployed` | ✅ 部署成功，Agent 可用 |
 | `failed` | ❌ 部署失败，查看响应中的 `error` 字段 |
 
@@ -398,6 +398,9 @@ Before calling:
 - `403`: Authenticated but not allowed (not owner / permission). Ask user to check agent ownership.
 - `404`: Agent not found. Ask user to verify `agent_id`.
 - `409`: Conflict (symbol conflict for PM agents). Report the conflicting agents and symbols.
+- `502`: (User Research) Creator auth failure (`X-Hubble-Auth-Key` wrong) or Creator returned 5xx/connection error.
+- `503`: (User Research) `RESEARCH_CREATOR_BASE_URL` not configured on server.
+- `504`: (User Research) Creator request timed out (default 30s).
 - `5xx`: Server error. Retry once with backoff; if still failing, stop and report response body.
 
 ## Curl templates (copy-paste)
