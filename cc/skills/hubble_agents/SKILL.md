@@ -172,7 +172,7 @@ API 前缀：`/api/v1/agents/user-research`。
 |---|---|---|---|---|
 | `name` | ✅ | string | Agent 的显示名称，最长 160 字符 | `"BTC 技术分析 Agent"` |
 | `prompt` | ✅ | string | 核心分析指令，描述 Agent 要分析什么、关注哪些指标、输出什么结论。写得越具体，分析质量越高 | `"分析 BTC 的 RSI、MACD 和布林带，判断当前趋势方向，给出做多/做空建议及主要理由"` |
-| `asset_type` | ✅ | string | 分析的资产类别 | `"crypto"`（加密货币）/ `"forex"`（外汇） |
+| `asset_type` | ✅ | string | 分析的资产类别 | `"Crypto"`（加密货币）/ `"A-shares"`（A股）/ `"HK stocks"`（港股）/ `"US stocks"`（美股） |
 | `analysis_type` | ✅ | string | 分析类型，影响 Agent 的分析框架 | `"Technical Analysis"`（技术分析）/ `"Fundamental Research"`（基本面）/ `"Capital Flow Analysis"`（资金流向）/ `"Macro Analysis"`（宏观） |
 | `datasource_ids` | ✅ | string[] | 选用的数据源 ID 列表（12 位 hex 字符串）。先调 `GET /api/v1/agents/user-research/data-sources` 查看平台支持的数据源 | `["a1b2c3d4e5f6", "0a1b2c3d4e5f"]` |
 | `llm_provider_id` | ✅ | string | LLM 供应商，见上方表格 | `"gemini_vertex"` |
@@ -326,7 +326,7 @@ curl -sS --fail-with-body \
 |---|---|---|
 | `page` | 页码，从 1 开始 | `1` |
 | `page_size` | 每页条数，最大 100 | `20` |
-| `asset_type` | 按资产类型筛选 | `"crypto"` |
+| `asset_type` | 按资产类型筛选 | `"Crypto"` |
 | `analysis_type` | 按分析类型筛选 | `"Technical Analysis"` |
 
 ---
