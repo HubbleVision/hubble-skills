@@ -5,7 +5,7 @@ description: Manage agents (PM agents, User Research agents, and generic agents)
 
 # Hubble Agents Skill
 
-Version: v0.3.1
+Version: v0.5.0
 
 ## When to use
 
@@ -157,8 +157,8 @@ Call:
 |---|---|---|---|
 | `name` | ✅ | Agent 的显示名称，最长 160 字符 | `"BTC 技术分析 Agent"` |
 | `prompt` | ✅ | 核心分析指令。描述 Agent 要分析什么、关注哪些指标、输出什么结论。越具体越好 | `"分析 BTC 的 RSI、MACD 和布林带，判断趋势，给出做多/做空建议"` |
-| `asset_type` | ✅ | 分析的资产类别 | `"crypto"`（加密货币）/ `"forex"`（外汇） |
-| `analysis_type` | ✅ | 分析类型，影响分析框架 | `"technical_analysis"` / `"on_chain"` / `"sentiment"` |
+| `asset_type` | ✅ | 分析的资产类别 | `"Crypto"`（加密货币）/ `"A-shares"`（A股）/ `"HK stocks"`（港股）/ `"US stocks"`（美股） |
+| `analysis_type` | ✅ | 分析类型，影响分析框架 | `"Technical Analysis"`（技术分析）/ `"Fundamental Research"`（基本面）/ `"Capital Flow Analysis"`（资金流向）/ `"Macro Analysis"`（宏观） |
 | `datasource_ids` | ✅ | 数据源 ID 列表（12 位 hex 字符串），至少一个。先调 `GET /api/v1/agents/user-research/data-sources` 查询可选列表 | `["a1b2c3d4e5f6"]` |
 | `llm_provider_id` | ✅ | LLM 供应商，见上方表格 | `"gemini_vertex"` |
 | `llm_model` | ✅ | LLM 模型，须与 `llm_provider_id` 配对 | `"gemini-3-flash-preview"` |
@@ -171,21 +171,34 @@ Call:
 根据用户提供的信息量决定行为：
 
 - 用户已提供全部必填字段 → 直接展示请求体摘要，确认后执行。
-- 用户提供了部分字段 → 只追问缺失的必填项。
-- 用户未提供任何字段 → 先询问：
-  > "要我一步步引导你填写，还是你直接告诉我所有参数？"
+- 其他情况 → 先问：
+  > "要从模板快速创建，还是手动配置所有参数？"
+  - **模板** → 进入模板创建路径（见下方）
+  - **手动** → 进入引导模式（每次只问一个）
 
 **引导模式提问顺序（每次只问一个）**：
 
 1. 这个 Research Agent 叫什么名字？
 2. 描述它要做什么分析（将成为 Agent 的核心指令）。越具体越好，比如关注哪些指标、输出什么结论。
-3. 分析哪类资产？`crypto`（加密货币）/ `forex`（外汇）/ 其他（请说明）
-4. 分析类型？`technical_analysis`（技术分析）/ `on_chain`（链上数据）/ `sentiment`（情绪分析）/ 其他（请说明）
+3. 分析哪类资产？`Crypto`（加密货币）/ `A-shares`（A股）/ `HK stocks`（港股）/ `US stocks`（美股）/ 其他（请说明，值需与 Creator 配置一致）
+4. 分析类型？`Technical Analysis`（技术分析）/ `Fundamental Research`（基本面研究）/ `Capital Flow Analysis`（资金流向）/ `Macro Analysis`（宏观分析）/ 其他（请说明，值需与 Creator 配置一致）
 5. 调 `GET /api/v1/agents/user-research/data-sources` 列出可用数据源，展示给用户选择
 6. 使用哪个 LLM？`gemini_vertex`（gemini-3-flash-preview）/ `minimax`（MiniMax-M2.7）
 7. 是否公开到市场？（可选，默认 `false`，可跳过）
 
 全部收集完毕后，展示完整 JSON body，等用户确认后再执行。
+
+**模板创建路径（5 步）**：
+
+1. 调用 `GET /api/v1/config/indicator-templates`，按 `asset_type` 分组展示模板列表（序号、名称、分析类型），等用户输入序号选择。
+2. 询问：这个 Agent 叫什么名字？
+3. 询问：使用哪个 LLM？`gemini_vertex`（gemini-3-flash-preview，通用）/ `minimax`（MiniMax-M2.7，中文场景）
+4. 展示模板 prompt 前两行预览，询问："要直接使用模板指令，还是在模板基础上补充说明？"
+   - 直接使用 → prompt 不变
+   - 补充说明 → 将用户输入追加到模板 prompt 末尾（不覆盖原始指令）
+5. 展示完整 JSON body，等用户确认后执行创建请求。
+
+从模板提取的字段：`datasource_ids` ← `selected_indicator_ids`，`prompt`、`asset_type`（如 `"Crypto"`）、`analysis_type`（如 `"Technical Analysis"`）直接使用，无需转换格式。
 
 #### 示例请求体
 
@@ -194,8 +207,8 @@ Call:
   "name": "BTC 技术分析 Agent",
   "description": "每小时分析一次 BTC 技术面，给出趋势判断",
   "prompt": "分析 BTC 的 RSI、MACD 和布林带，判断当前趋势方向，给出做多/做空建议及主要理由",
-  "asset_type": "crypto",
-  "analysis_type": "technical_analysis",
+  "asset_type": "Crypto",
+  "analysis_type": "Technical Analysis",
   "datasource_ids": ["a1b2c3d4e5f6", "0a1b2c3d4e5f"],
   "llm_provider_id": "gemini_vertex",
   "llm_model": "gemini-3-flash-preview",
@@ -247,6 +260,26 @@ Call:
 - `GET /api/v1/agents/user-research/data-sources`
 
 在创建 Agent 前调用，列出平台支持的所有数据源，供用户选择 `datasource_ids`。每条记录包含 `id`（填入请求体）、`name`（展示名）和 `params`（配置参数）。
+
+---
+
+### Action: 查询 Indicator 模板
+
+Call:
+
+- `GET /api/v1/config/indicator-templates`
+
+获取预设分析模板，每条模板已内置 `selected_indicator_ids`（对应创建请求的 `datasource_ids`）和专业 `prompt`，可直接用于创建 User Research Agent。无需认证。
+
+每条模板字段：
+
+| 字段 | 说明 |
+|---|---|
+| `name` | 模板显示名称 |
+| `asset_type` | 资产类型（如 `"Crypto"`、`"A-shares"`、`"HK stocks"`、`"US stocks"`） |
+| `analysis_type` | 分析类型（如 `"Technical Analysis"`、`"Fundamental Research"`） |
+| `selected_indicator_ids` | 12 位 hex ID 列表，直接用作 `datasource_ids` |
+| `prompt` | 完整分析指令，可直接使用 |
 
 ---
 
