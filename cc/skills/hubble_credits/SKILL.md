@@ -1,11 +1,11 @@
 ---
 name: hubble_credits
-description: Use when the user asks about Hubble credits balance, transaction history, deposit records, or wants to create a recharge order via the Hubble Market API.
+description: Use when the user asks about Hubble credits balance, transaction history, deposit records, recharge packages, or wants to create a recharge order via the Hubble Market API.
 ---
 
 # Hubble Credits Skill
 
-Version: v0.2.1
+Version: v0.4.0
 
 ## When to use
 
@@ -15,6 +15,8 @@ Use this skill when the user asks about:
 - Credits transactions history
 - Deposits records
 - Creating a recharge (deposit) order
+- Listing available recharge packages
+- Creating a deposit by selecting a package
 
 ## Requirements
 
@@ -95,3 +97,35 @@ curl -sS --fail-with-body \
 ```
 
 Response fields: `deposit_id`, `client_reference`, `credits`, `amount_usd`, `currency`, `infini_order_id`, `checkout_url` (redirect to Infini checkout page).
+
+---
+
+### List recharge packages
+
+列出平台提供的充值套餐，供用户选择后按套餐充值。
+
+```bash
+curl -sS --fail-with-body \
+  -H "Authorization: Bearer $HUBBLE_API_KEY" \
+  -H "Content-Type: application/json" \
+  "$BASE/api/v1/credits/packages"
+```
+
+Response fields per item: `package_id`（套餐 slug，传给按套餐充值接口）、`credits`、`amount_usd`、`currency`、`label`（展示名，如 `"Starter"`）、`is_default`（是否默认推荐套餐）、`sort_order`（展示排序，越小越靠前）。
+
+---
+
+### Create deposit by package — requires confirmation
+
+先调 `GET /credits/packages` 列出可用套餐，让用户选择后再执行。确认时展示：套餐名（`label`）、`credits`、`amount_usd`。
+
+```bash
+curl -sS --fail-with-body \
+  -H "Authorization: Bearer $HUBBLE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -X POST \
+  "$BASE/api/v1/credits/deposits/by-package" \
+  -d '{"package_id": "<package_slug>"}'
+```
+
+Response fields 与 `POST /deposits` 相同：`deposit_id`, `client_reference`, `credits`, `amount_usd`, `currency`, `infini_order_id`, `checkout_url`。

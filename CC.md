@@ -4,7 +4,7 @@
 
 - `cc/skills/`
 
-当前版本：`v0.3.0`
+当前版本：`v0.4.0`
 
 ## 前置条件
 
@@ -45,6 +45,7 @@ mkdir -p ~/.claude/skills
 ### 方案 A：symlink（推荐，方便升级）
 
 ```bash
+ln -sfn "$(pwd)/cc/skills/hubble_auth"     ~/.claude/skills/hubble_auth
 ln -sfn "$(pwd)/cc/skills/hubble_credits"  ~/.claude/skills/hubble_credits
 ln -sfn "$(pwd)/cc/skills/hubble_agents"   ~/.claude/skills/hubble_agents
 ln -sfn "$(pwd)/cc/skills/hubble_pm_agent" ~/.claude/skills/hubble_pm_agent
