@@ -213,7 +213,7 @@ API 前缀：`/api/v1/agents/user-research`。
    - 补充说明 → 将用户输入追加到模板 prompt 末尾（不覆盖原始指令）
 5. 展示完整 JSON body，等用户确认后执行创建请求。
 
-从模板提取的字段：`datasource_ids` ← `selected_indicator_ids`，`prompt`、`asset_type`、`analysis_type` 直接使用。
+从模板提取的字段：`datasource_ids` ← `selected_indicator_ids`，`prompt`、`asset_type`（如 `"Crypto"`）、`analysis_type`（如 `"Technical Analysis"`）直接使用，无需转换格式。
 
 #### 完整示例请求体
 
@@ -295,7 +295,7 @@ curl -sS --fail-with-body \
 
 ### 查询 Indicator 模板
 
-获取预设分析模板，每条模板已内置 `datasource_ids` 和专业 `prompt`，可直接用于创建 User Research Agent。
+获取预设分析模板，每条模板已内置 `selected_indicator_ids`（对应创建请求的 `datasource_ids`）和专业 `prompt`，可直接用于创建 User Research Agent。
 
 ```bash
 curl -sS --fail-with-body \
