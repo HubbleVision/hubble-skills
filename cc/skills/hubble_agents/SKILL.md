@@ -5,7 +5,7 @@ description: Use when the user asks to list, view, create, update, or delete age
 
 # Hubble Agents Skill
 
-Version: v0.3.1
+Version: v0.5.0
 
 ## When to use
 
@@ -186,9 +186,10 @@ API 前缀：`/api/v1/agents/user-research`。
 根据用户提供的信息量决定行为：
 
 - **用户已提供全部必填字段** → 直接展示请求体摘要，确认后执行。
-- **用户提供了部分字段** → 只追问缺失的必填项，不询问模式。
-- **用户未提供任何字段** → 询问用户偏好：
-  > "要我一步步引导你填写参数，还是你直接告诉我所有内容？"
+- **其他情况** → 先问：
+  > "要从模板快速创建，还是手动配置所有参数？"
+  - **模板** → 进入模板创建路径（见下方）
+  - **手动** → 进入引导模式（每次只问一个）
 
 **引导模式提问顺序（每次只问一个）**：
 
@@ -201,6 +202,18 @@ API 前缀：`/api/v1/agents/user-research`。
 7. 是否公开到市场？（可选，默认 `false`，直接回车跳过）
 
 收集完毕后，展示完整 JSON body，等用户确认后再执行。
+
+**模板创建路径（5 步）**：
+
+1. 调用 `GET /api/v1/config/indicator-templates`，按 `asset_type` 分组展示模板列表（序号、名称、分析类型），等用户输入序号选择。
+2. 询问：这个 Agent 叫什么名字？
+3. 询问：使用哪个 LLM？`gemini_vertex`（gemini-3-flash-preview，通用）/ `minimax`（MiniMax-M2.7，中文场景）
+4. 展示模板 prompt 前两行预览，询问："要直接使用模板指令，还是在模板基础上补充说明？"
+   - 直接使用 → prompt 不变
+   - 补充说明 → 将用户输入追加到模板 prompt 末尾（不覆盖原始指令）
+5. 展示完整 JSON body，等用户确认后执行创建请求。
+
+从模板提取的字段：`datasource_ids` ← `selected_indicator_ids`，`prompt`、`asset_type`、`analysis_type` 直接使用。
 
 #### 完整示例请求体
 
@@ -277,6 +290,27 @@ curl -sS --fail-with-body \
 ```
 
 每条记录包含 `id`（填入请求体）、`name`（展示名）和 `params`（配置参数）。
+
+---
+
+### 查询 Indicator 模板
+
+获取预设分析模板，每条模板已内置 `datasource_ids` 和专业 `prompt`，可直接用于创建 User Research Agent。
+
+```bash
+curl -sS --fail-with-body \
+  "$BASE/api/v1/config/indicator-templates"
+```
+
+无需认证。每条模板字段：
+
+| 字段 | 说明 |
+|---|---|
+| `name` | 模板显示名称 |
+| `asset_type` | 资产类型（如 `"Crypto"`、`"A-shares"`、`"HK stocks"`、`"US stocks"`） |
+| `analysis_type` | 分析类型（如 `"Technical Analysis"`、`"Fundamental Research"`） |
+| `selected_indicator_ids` | 12 位 hex ID 列表，直接用作 `datasource_ids` |
+| `prompt` | 完整分析指令，可直接使用 |
 
 ---
 
