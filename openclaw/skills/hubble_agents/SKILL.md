@@ -295,8 +295,8 @@ Call:
 |---|---|---|
 | `page` | 页码，从 1 开始 | `1` |
 | `page_size` | 每页条数，最大 100 | `20` |
-| `asset_type` | 按资产类型筛选 | `crypto` |
-| `analysis_type` | 按分析类型筛选 | `technical_analysis` |
+| `asset_type` | 按资产类型筛选 | `Crypto` |
+| `analysis_type` | 按分析类型筛选 | `Technical Analysis` |
 
 展示字段：`id`、`name`、`description`、`deploy_status`、`is_public`、`created_at`。
 
