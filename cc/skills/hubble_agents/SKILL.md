@@ -173,7 +173,7 @@ API 前缀：`/api/v1/agents/user-research`。
 | `name` | ✅ | string | Agent 的显示名称，最长 160 字符 | `"BTC 技术分析 Agent"` |
 | `prompt` | ✅ | string | 核心分析指令，描述 Agent 要分析什么、关注哪些指标、输出什么结论。写得越具体，分析质量越高 | `"分析 BTC 的 RSI、MACD 和布林带，判断当前趋势方向，给出做多/做空建议及主要理由"` |
 | `asset_type` | ✅ | string | 分析的资产类别 | `"crypto"`（加密货币）/ `"forex"`（外汇） |
-| `analysis_type` | ✅ | string | 分析类型，影响 Agent 的分析框架 | `"technical_analysis"`（技术分析）/ `"on_chain"`（链上数据）/ `"sentiment"`（情绪分析） |
+| `analysis_type` | ✅ | string | 分析类型，影响 Agent 的分析框架 | `"Technical Analysis"`（技术分析）/ `"Fundamental Research"`（基本面）/ `"Capital Flow Analysis"`（资金流向）/ `"Macro Analysis"`（宏观） |
 | `datasource_ids` | ✅ | string[] | 选用的数据源 ID 列表（12 位 hex 字符串）。先调 `GET /api/v1/agents/user-research/data-sources` 查看平台支持的数据源 | `["a1b2c3d4e5f6", "0a1b2c3d4e5f"]` |
 | `llm_provider_id` | ✅ | string | LLM 供应商，见上方表格 | `"gemini_vertex"` |
 | `llm_model` | ✅ | string | LLM 模型，必须与 `llm_provider_id` 配对 | `"gemini-3-flash-preview"` |
@@ -195,8 +195,8 @@ API 前缀：`/api/v1/agents/user-research`。
 
 1. 这个 Research Agent 叫什么名字？
 2. 描述它要做什么分析——这将成为 Agent 的核心指令（prompt）。写得越具体越好，比如关注哪些指标、输出什么结论。
-3. 分析哪类资产？`crypto`（加密货币）/ `forex`（外汇）/ 其他（请说明）
-4. 分析类型是？`technical_analysis`（技术分析）/ `on_chain`（链上数据）/ `sentiment`（情绪分析）/ 其他（请说明）
+3. 分析哪类资产？`Crypto`（加密货币）/ `A-shares`（A股）/ `HK stocks`（港股）/ `US stocks`（美股）/ 其他（请说明，值需与 Creator 配置一致）
+4. 分析类型是？`Technical Analysis`（技术分析）/ `Fundamental Research`（基本面研究）/ `Capital Flow Analysis`（资金流向）/ `Macro Analysis`（宏观分析）/ 其他（请说明，值需与 Creator 配置一致）
 5. 先调 `GET /api/v1/agents/user-research/data-sources` 列出可用数据源，展示给用户选择
 6. 使用哪个 LLM？`gemini_vertex`（gemini-3-flash-preview，通用）/ `minimax`（MiniMax-M2.7，中文场景）
 7. 是否公开到市场？（可选，默认 `false`，直接回车跳过）
@@ -222,8 +222,8 @@ API 前缀：`/api/v1/agents/user-research`。
   "name": "BTC 技术分析 Agent",
   "description": "每小时分析一次 BTC 技术面，给出趋势判断",
   "prompt": "分析 BTC 的 RSI、MACD 和布林带，判断当前趋势方向，给出做多/做空建议及主要理由",
-  "asset_type": "crypto",
-  "analysis_type": "technical_analysis",
+  "asset_type": "Crypto",
+  "analysis_type": "Technical Analysis",
   "datasource_ids": ["a1b2c3d4e5f6", "0a1b2c3d4e5f"],
   "llm_provider_id": "gemini_vertex",
   "llm_model": "gemini-3-flash-preview",
@@ -327,7 +327,7 @@ curl -sS --fail-with-body \
 | `page` | 页码，从 1 开始 | `1` |
 | `page_size` | 每页条数，最大 100 | `20` |
 | `asset_type` | 按资产类型筛选 | `"crypto"` |
-| `analysis_type` | 按分析类型筛选 | `"technical_analysis"` |
+| `analysis_type` | 按分析类型筛选 | `"Technical Analysis"` |
 
 ---
 
