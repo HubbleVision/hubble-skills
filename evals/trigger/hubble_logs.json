@@ -1,0 +1,22 @@
+[
+  {"query": "把 pm 最近 2 小时的 decision log 拉出来，error 和 warn 级别就行", "should_trigger": true},
+  {"query": "hubble research logs 里最近有没有 error 级别的条目", "should_trigger": true},
+  {"query": "查一下 BTCUSDT 最近 7 天的 PnL summary，按 day 分桶", "should_trigger": true},
+  {"query": "列出我现在所有 open 状态的持仓", "should_trigger": true},
+  {"query": "pm agent 7f1e8b2a-3d4c-4f5e-9a0b-1c2d3e4f5a6b 最近的 position recovery 记录有没有异常", "should_trigger": true},
+  {"query": "order id 0xdeadbeef 的订单历史给我，包括所有 status 变迁", "should_trigger": true},
+  {"query": "pnl orders 按 action_types=close 过滤，前 100 条", "should_trigger": true},
+  {"query": "pm agent 7f1e8b2a 的 positions symbols，只看 closed 的", "should_trigger": true},
+  {"query": "position_id 0xcafe 的 position 日志时间倒序给我", "should_trigger": true},
+  {"query": "过去 24 小时 pm 的决策日志里包含 'skip' 关键字的条目", "should_trigger": true},
+  {"query": "hubble credits 余额还剩多少", "should_trigger": false},
+  {"query": "给 pm agent 发个 trigger", "should_trigger": false},
+  {"query": "创建一个 research agent", "should_trigger": false},
+  {"query": "紧急平仓", "should_trigger": false},
+  {"query": "我想把 nginx 的 access log 按状态码 5xx 过滤出来", "should_trigger": false},
+  {"query": "cloudwatch logs insight 怎么按 trace_id 筛选", "should_trigger": false},
+  {"query": "grafana loki 怎么查 json 字段", "should_trigger": false},
+  {"query": "登录 hubble 拿 access token", "should_trigger": false},
+  {"query": "ssh 进生产机看一下 syslog", "should_trigger": false},
+  {"query": "列一下我的 pm agents", "should_trigger": false}
+]

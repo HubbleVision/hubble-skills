@@ -1,0 +1,22 @@
+[
+  {"query": "查一下我在 hubble 上还有多少 credits，顺便最近一周的消费流水也列一下", "should_trigger": true},
+  {"query": "我账户里好像没 credits 了，帮我充 5000 个，走 infini checkout 就行", "should_trigger": true},
+  {"query": "hubble 有几档充值套餐？列一下 credits 数和美元价格", "should_trigger": true},
+  {"query": "之前那个 pending 的充值订单状态咋样了，看看 checkout_url 是不是还能点", "should_trigger": true},
+  {"query": "按 Starter 套餐帮我下一个 deposit 订单", "should_trigger": true},
+  {"query": "最近的 CONSUME 类型的 credits 扣费给我按时间倒序列前 20 条", "should_trigger": true},
+  {"query": "hubble 市场我钱还剩多少？balance 和昨天比少了多少？", "should_trigger": true},
+  {"query": "把我这个月所有 DEPOSIT 和 CONSUME 的 credits 流水导出来", "should_trigger": true},
+  {"query": "帮我走一个 hubble 充值流程，要调用 POST /credits/deposits 然后返回 checkout_url", "should_trigger": true},
+  {"query": "查一下 hubble 的 /credits/packages 列表", "should_trigger": true},
+  {"query": "查一下我 Chase 信用卡这个月账单", "should_trigger": false},
+  {"query": "我的 credit score 最近掉了 50 分，怎么补救", "should_trigger": false},
+  {"query": "给我的 pm agent 加点新 symbol，BTCUSDT 和 ETHUSDT", "should_trigger": false},
+  {"query": "hubble 登录 token 过期了帮我重新登录", "should_trigger": false},
+  {"query": "今天的 PnL summary 按 symbol 分桶给我", "should_trigger": false},
+  {"query": "帮我看 BTCUSDT 这个仓位 开仓均价多少", "should_trigger": false},
+  {"query": "stripe 最近那笔 refund 什么时候到账", "should_trigger": false},
+  {"query": "explain how USDC bridge fees work on base", "should_trigger": false},
+  {"query": "hubble research agent 创建要选哪些 data source", "should_trigger": false},
+  {"query": "跑一下这个 research agent 看结果", "should_trigger": false}
+]

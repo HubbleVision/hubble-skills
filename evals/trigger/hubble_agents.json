@@ -1,0 +1,22 @@
+[
+  {"query": "给我列一下 hubble 上我所有的 pm agent，按创建时间倒序", "should_trigger": true},
+  {"query": "创建一个新的 pm agent，名字叫 btc-scalper-v3，交易所用 weex，api_key 认证，跑 BTCUSDT 和 ETHUSDT", "should_trigger": true},
+  {"query": "把 agent 7f1e8b2a-3d4c-4f5e-9a0b-1c2d3e4f5a6b 的 symbols 改成只留 BTCUSDT，risk_limit 改成 0.3", "should_trigger": true},
+  {"query": "创建一个 user research agent，分析 BTC 的 MACD 和 RSI，用 gemini_vertex，是 crypto 技术分析", "should_trigger": true},
+  {"query": "hubble 上 research agent 的模板（indicator templates）都有哪些？按 asset_type 分组给我", "should_trigger": true},
+  {"query": "刚创建那个 research agent 的部署 job 跑到哪步了？job_id 是 deploy-8fa3c2", "should_trigger": true},
+  {"query": "把 research agent 7f1e8b2a-3d4c-4f5e-9a0b-1c2d3e4f5a6b 回滚到 v2", "should_trigger": true},
+  {"query": "列一下这个 research agent 的所有历史版本", "should_trigger": true},
+  {"query": "删除 agent 7f1e8b2a-3d4c-4f5e-9a0b-1c2d3e4f5a6b", "should_trigger": true},
+  {"query": "看看 hubble 平台上都有哪些 user research agent 的 data source 可选", "should_trigger": true},
+  {"query": "跑一下 agent 7f1e8b2a-3d4c-4f5e-9a0b-1c2d3e4f5a6b 的下一轮决策", "should_trigger": false},
+  {"query": "列一下这个 agent 最近 20 条 runs", "should_trigger": false},
+  {"query": "帮我启动这个 pm agent 的 scheduler，间隔 30 秒", "should_trigger": false},
+  {"query": "最近 pm 的 decision log 有没有报错", "should_trigger": false},
+  {"query": "把所有仓位紧急平掉", "should_trigger": false},
+  {"query": "openai 的 assistants api 怎么创建一个 agent", "should_trigger": false},
+  {"query": "写个 python 脚本 schedule 每小时跑一次 cron", "should_trigger": false},
+  {"query": "hubble credits 余额", "should_trigger": false},
+  {"query": "langgraph agent 的 state 怎么持久化", "should_trigger": false},
+  {"query": "给 pm agent 打个 reconcile 让它对一下仓位", "should_trigger": false}
+]

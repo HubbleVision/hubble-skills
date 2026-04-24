@@ -1,6 +1,6 @@
 ---
 name: hubble_agents
-description: Manage agents (PM agents, User Research agents, and generic agents) on Hubble Market Server using an API key.
+description: Use when the user asks to list, view, create, update, delete, or deploy agents on Hubble Market — including PM agents (CRUD) and User Research agents (create/update/delete, run a new research agent, deploy job status, version history, rollback, data sources, indicator templates). NOTE "run / 跑 a research agent" in Hubble means creating or deploying one here, not the x402 pay-per-execution flow handled by hubble_runs.
 ---
 
 # Hubble Agents Skill

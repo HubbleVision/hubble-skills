@@ -4,7 +4,7 @@
 
 - `cc/skills/`
 
-当前版本：`v0.5.0`
+当前版本：`v0.5.1`
 
 ## 前置条件
 
@@ -45,13 +45,14 @@ mkdir -p ~/.claude/skills
 ### 方案 A：symlink（推荐，方便升级）
 
 ```bash
-ln -sfn "$(pwd)/cc/skills/hubble_auth"     ~/.claude/skills/hubble_auth
 ln -sfn "$(pwd)/cc/skills/hubble_credits"  ~/.claude/skills/hubble_credits
 ln -sfn "$(pwd)/cc/skills/hubble_agents"   ~/.claude/skills/hubble_agents
 ln -sfn "$(pwd)/cc/skills/hubble_pm_agent" ~/.claude/skills/hubble_pm_agent
 ln -sfn "$(pwd)/cc/skills/hubble_runs"     ~/.claude/skills/hubble_runs
 ln -sfn "$(pwd)/cc/skills/hubble_logs"     ~/.claude/skills/hubble_logs
 ```
+
+> 注：Auth / 登录流程不通过 skill 完成。`hb_sk_` API key 需要你在 Hubble Market 网页上登录后自行生成并导出到环境变量。详见 `docs/skill-design-principles.md` → 原则 1。
 
 ### 方案 B：copy（适合离线/服务器场景）
 

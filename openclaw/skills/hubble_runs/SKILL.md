@@ -1,6 +1,6 @@
 ---
 name: hubble_runs
-description: Create and query agent runs from Hubble Market Server using an API key, with x402 payment flow support.
+description: Use when the user asks to invoke an already-existing Hubble agent via the x402 pay-per-execution flow — creating a run, polling or checking a specific run_id's status, or listing recent runs for an agent_id. NOT for creating, deploying, or managing an agent itself; "跑/部署 a new agent" goes to hubble_agents.
 ---
 
 # Hubble Runs Skill

@@ -1,0 +1,89 @@
+name: skills-eval
+
+# 在 PR 或 main 推送时跑 hubble-skills 的 trigger + routing eval。
+# runner 直接打 Anthropic Messages API (Python stdlib urllib)，无 pip 依赖、无 CLI 依赖。
+# 需要 Actions secret: ANTHROPIC_API_KEY
+#
+# 触发条件：
+#   - 修改 cc/skills/** 或 openclaw/skills/** 下的 SKILL.md
+#   - 修改 evals/** 下的 eval 集或 runner
+#   - main 分支推送
+#   - 手动 dispatch
+
+on:
+  pull_request:
+    paths:
+      - 'cc/skills/**/SKILL.md'
+      - 'openclaw/skills/**/SKILL.md'
+      - 'evals/**'
+  push:
+    branches: [main]
+    paths:
+      - 'cc/skills/**/SKILL.md'
+      - 'openclaw/skills/**/SKILL.md'
+      - 'evals/**'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Eval mode'
+        type: choice
+        options: [all, trigger, routing]
+        default: all
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      HUBBLE_EVAL_WORKERS: '6'
+      HUBBLE_EVAL_MODEL: 'claude-sonnet-4-6'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run evals
+        env:
+          MODE: ${{ github.event.inputs.mode || 'all' }}
+        run: bash evals/run_all.sh "$MODE"
+        shell: bash
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-results
+          path: evals/results/
+
+      - name: Post PR summary
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            const dir = 'evals/results';
+            if (!fs.existsSync(dir)) return;
+            let body = '## hubble-skills eval\n\n';
+            const files = fs.readdirSync(dir).filter(f => f.endsWith('.json')).sort();
+            body += '| kind | variant | skill | metric |\n|---|---|---|---|\n';
+            for (const f of files) {
+              const j = JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'));
+              if (f.startsWith('trigger-')) {
+                const m = j.metrics || {};
+                if (!m.total) continue; // skip tombstone / empty
+                body += `| trigger | ${j.variant} | ${j.skill.name} | acc ${(m.accuracy*100).toFixed(1)}% · P ${(m.precision*100).toFixed(1)}% · R ${(m.recall*100).toFixed(1)}% · F1 ${(m.f1*100).toFixed(1)}% |\n`;
+              } else if (f.startsWith('routing-')) {
+                const s = j.summary || {};
+                body += `| routing | ${j.variant} | — | pass ${s.pass}/${s.total} (${(s.pass_rate*100).toFixed(1)}%) |\n`;
+              }
+            }
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body,
+            });

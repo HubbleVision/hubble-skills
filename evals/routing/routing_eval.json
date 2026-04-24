@@ -1,0 +1,56 @@
+{
+  "description": "Cross-skill routing eval for hubble-skills. For each prompt, determine which skill (if any) should be invoked. This tests description quality when multiple skills compete.",
+  "variants": ["cc", "openclaw"],
+  "cases": [
+    {"id": "auth_neg_1", "prompt": "帮我登录 Hubble Market", "expected": null, "category": "negative", "note": "原则 1：skill 只做 post-auth 调用，用户登录流程不归任何 skill 管，正确行为是提示用户去网页登录后拿 hb_sk_ key"},
+    {"id": "auth_neg_2", "prompt": "给我的邮箱发一个验证码用来登录 Hubble", "expected": null, "category": "negative", "note": "原则 1：skill 不应触发邮箱 OTP 登录流程"},
+    {"id": "auth_neg_3", "prompt": "用邮箱验证码登录 Hubble Market，我的邮箱是 alex@hubble.xyz", "expected": null, "category": "negative", "note": "原则 1"},
+    {"id": "auth_neg_4", "prompt": "get me an access token from Hubble Market using wallet signature", "expected": null, "category": "negative", "note": "原则 1：钱包签名登录 / 拿 access token 不应有 skill 触发"},
+    {"id": "auth_neg_5", "prompt": "用钱包签名登录 Hubble，先拿 challenge", "expected": null, "category": "negative", "note": "原则 1"},
+
+    {"id": "credits_pos_1", "prompt": "查一下我的 Hubble credits 余额", "expected": "hubble_credits", "category": "positive"},
+    {"id": "credits_pos_2", "prompt": "列出我最近的 Hubble credits 消费记录", "expected": "hubble_credits", "category": "positive"},
+    {"id": "credits_pos_3", "prompt": "帮我在 Hubble 上充 1000 个 credits", "expected": "hubble_credits", "category": "positive"},
+    {"id": "credits_pos_4", "prompt": "列出 Hubble 所有充值套餐", "expected": "hubble_credits", "category": "positive"},
+    {"id": "credits_pos_5", "prompt": "我 Hubble 最近几次 deposits 状态怎样？", "expected": "hubble_credits", "category": "positive"},
+    {"id": "credits_pos_6", "prompt": "按 Starter 套餐在 Hubble 下一个充值订单", "expected": "hubble_credits", "category": "positive"},
+
+    {"id": "agents_pos_1", "prompt": "列出我在 Hubble 上的 PM agents", "expected": "hubble_agents", "category": "positive"},
+    {"id": "agents_pos_2", "prompt": "看一下 Hubble agent 11111111-2222-3333-4444-555555555555 的详情", "expected": "hubble_agents", "category": "positive"},
+    {"id": "agents_pos_3", "prompt": "创建一个新的 PM agent 叫 BTC-bot，exchange 用 weex，api_key 认证", "expected": "hubble_agents", "category": "positive"},
+    {"id": "agents_pos_4", "prompt": "创建一个 Hubble User Research Agent，分析 BTC 的技术面", "expected": "hubble_agents", "category": "positive"},
+    {"id": "agents_pos_5", "prompt": "删除 Hubble agent 11111111-2222-3333-4444-555555555555", "expected": "hubble_agents", "category": "positive"},
+    {"id": "agents_pos_6", "prompt": "查看 Hubble research agent 的部署 job 状态", "expected": "hubble_agents", "category": "positive"},
+    {"id": "agents_pos_7", "prompt": "列出我 Hubble research agent 的版本历史", "expected": "hubble_agents", "category": "positive"},
+    {"id": "agents_pos_8", "prompt": "把这个 Hubble research agent 回滚到 v2", "expected": "hubble_agents", "category": "positive"},
+
+    {"id": "pm_pos_1", "prompt": "看看 Hubble 上 PM-Agent 7f1e8b2a-3d4c-4f5e-9a0b-1c2d3e4f5a6b 现在的状态", "expected": "hubble_pm_agent", "category": "positive"},
+    {"id": "pm_pos_2", "prompt": "启动 Hubble PM agent 7f1e8b2a-3d4c-4f5e-9a0b-1c2d3e4f5a6b 的 scheduler", "expected": "hubble_pm_agent", "category": "positive"},
+    {"id": "pm_pos_3", "prompt": "在 Hubble 上立刻手动触发这个 PM agent 一轮决策", "expected": "hubble_pm_agent", "category": "positive"},
+    {"id": "pm_pos_4", "prompt": "紧急平仓！把 Hubble PM agent 的所有仓位都关掉", "expected": "hubble_pm_agent", "category": "positive"},
+    {"id": "pm_pos_5", "prompt": "给 Hubble PM agent 重新对一下仓位（reconcile）", "expected": "hubble_pm_agent", "category": "positive"},
+    {"id": "pm_pos_6", "prompt": "stop the Hubble PM agent scheduler", "expected": "hubble_pm_agent", "category": "positive"},
+
+    {"id": "runs_pos_1", "prompt": "跑一下 Hubble agent 7f1e8b2a-3d4c-4f5e-9a0b-1c2d3e4f5a6b 的一次 run", "expected": "hubble_runs", "category": "positive"},
+    {"id": "runs_pos_2", "prompt": "查一下 Hubble 这个 run a1b2c3 的状态", "expected": "hubble_runs", "category": "positive"},
+    {"id": "runs_pos_3", "prompt": "列出 Hubble 这个 agent 最近的 runs", "expected": "hubble_runs", "category": "positive"},
+    {"id": "runs_pos_4", "prompt": "poll the Hubble run progress for run a1b2c3", "expected": "hubble_runs", "category": "positive"},
+
+    {"id": "logs_pos_1", "prompt": "看看 Hubble 最近的 PM 决策日志", "expected": "hubble_logs", "category": "positive"},
+    {"id": "logs_pos_2", "prompt": "拉 Hubble 上 BTCUSDT 最近一天的 PnL summary", "expected": "hubble_logs", "category": "positive"},
+    {"id": "logs_pos_3", "prompt": "列出 Hubble 上我现在 open 的持仓", "expected": "hubble_logs", "category": "positive"},
+    {"id": "logs_pos_4", "prompt": "查 Hubble 单号 0xabc 的订单历史", "expected": "hubble_logs", "category": "positive"},
+    {"id": "logs_pos_5", "prompt": "Hubble research logs 里最近有没有报错？", "expected": "hubble_logs", "category": "positive"},
+    {"id": "logs_pos_6", "prompt": "Hubble position recovery 记录给我看看", "expected": "hubble_logs", "category": "positive"},
+
+    {"id": "amb_3", "prompt": "我想在 Hubble 上跑个新的 research agent", "expected": "hubble_agents", "category": "ambiguous", "note": "'跑' 容易误触发 hubble_runs；正确应走 hubble_agents（创建）"},
+    {"id": "amb_4", "prompt": "我 Hubble 账户里还有多少钱？", "expected": "hubble_credits", "category": "ambiguous", "note": "'钱'（在 Hubble 语境下=credits 余额）"},
+
+    {"id": "neg_1", "prompt": "给我写一首关于 BTC 的诗", "expected": null, "category": "negative"},
+    {"id": "neg_2", "prompt": "解释一下什么是 MACD", "expected": null, "category": "negative"},
+    {"id": "neg_3", "prompt": "帮我查一下北京明天的天气", "expected": null, "category": "negative"},
+    {"id": "neg_4", "prompt": "用 Python 写一个快排", "expected": null, "category": "negative"},
+    {"id": "neg_5", "prompt": "明天 BTC 会涨吗？", "expected": null, "category": "negative"},
+    {"id": "neg_6", "prompt": "帮我总结这份研报", "expected": null, "category": "negative"}
+  ]
+}

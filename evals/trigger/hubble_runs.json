@@ -1,0 +1,22 @@
+[
+  {"query": "跑一下 research agent 7f1e8b2a-3d4c-4f5e-9a0b-1c2d3e4f5a6b，input_payload 用 {\"symbol\": \"BTCUSDT\"}", "should_trigger": true},
+  {"query": "刚刚发起的 run 状态咋样了，run_id 是 run-abcdef123，帮我 poll 一下", "should_trigger": true},
+  {"query": "列一下 agent 7f1e8b2a-3d4c-4f5e-9a0b-1c2d3e4f5a6b 最近的 runs，前 10 条", "should_trigger": true},
+  {"query": "发起一次这个 hubble agent 的 run，看它输出是什么", "should_trigger": true},
+  {"query": "这个 paid agent 调用返回 402 payment required，帮我解释一下 x402 流程", "should_trigger": true},
+  {"query": "help me check if my last run on hubble succeeded or failed, run id is a1b2c3", "should_trigger": true},
+  {"query": "列出这个 agent 最近 50 条 run 记录，看 success rate", "should_trigger": true},
+  {"query": "execute a run on agent 7f1e8b2a-3d4c-4f5e-9a0b-1c2d3e4f5a6b with default inputs", "should_trigger": true},
+  {"query": "这次 run 的 task_state 一直卡在 executing 不动，超时了吗", "should_trigger": true},
+  {"query": "给 hubble 的 research agent 发一次 run 请求，input 是空", "should_trigger": true},
+  {"query": "创建一个新的 pm agent", "should_trigger": false},
+  {"query": "查 pm agent 的 scheduler 状态", "should_trigger": false},
+  {"query": "紧急平仓所有 BTCUSDT", "should_trigger": false},
+  {"query": "看 pm decision log", "should_trigger": false},
+  {"query": "github actions workflow 里怎么触发手动 run", "should_trigger": false},
+  {"query": "python -m pytest 怎么只跑一个 test case", "should_trigger": false},
+  {"query": "docker run 一个 postgres 镜像", "should_trigger": false},
+  {"query": "hubble 上我的 credits 还剩多少", "should_trigger": false},
+  {"query": "列一下 data sources 和 indicator templates", "should_trigger": false},
+  {"query": "跑一下这段代码看会不会抛异常", "should_trigger": false}
+]
