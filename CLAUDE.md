@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 仓库概述
 
-`hubble-skills` 是一个 AI assistant skill 包，为 Claude Code（`cc/`）和 OpenClaw（`openclaw/`）提供操作 Hubble Market API 的能力。当前版本：`v0.5.1`（见 `VERSION`）。
+`hubble-skills` 是一个 AI assistant skill 包，为 Claude Code（`cc/`）和 OpenClaw（`openclaw/`）提供操作 Hubble Market API 的能力。当前版本：`v0.5.2`（见 `VERSION`）。
 
 每个 skill 对应一类业务操作，通过 `HUBBLE_API_KEY`（前缀 `hb_sk_`）鉴权，直接调 REST API。
 
@@ -53,7 +53,7 @@ HUBBLE_EVAL_MODEL=claude-opus-4-6 bash evals/run_all.sh routing cc
 ```
 
 **后端选择**（自动）：
-- 未设置 `ANTHROPIC_API_KEY` → 走 `claude -p`（需先登录一次 Claude Code），eval 时临时隔离 `~/.claude/skills/` 防止 skill 污染结果
+- 未设置 `ANTHROPIC_API_KEY` → 走 `claude -p`（需先登录一次 Claude Code），以空临时目录作为 cwd 防止项目本地 `.claude/` 干扰，auth 走默认 `~/.claude/`
 - 已设置 `ANTHROPIC_API_KEY` → 走 urllib 直调 API（更快，CI 使用此路径）
 
 ## CI

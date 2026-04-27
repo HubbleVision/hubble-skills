@@ -1,11 +1,11 @@
 ---
 name: hubble_credits
-description: Use when the user asks about Hubble credits balance, transaction history, deposit records, recharge packages, or wants to create a recharge order via the Hubble Market API.
+description: Use when the user asks about Hubble credits balance, transaction history, deposit records, listing recharge packages (tiers, optional bonus_percent for UI copy), creating a raw-credits deposit, or creating a deposit by package slug (by-package) via the Hubble Market API.
 ---
 
 # Hubble Credits Skill
 
-Version: v0.4.0
+Version: v0.5.2
 
 ## When to use
 
@@ -14,9 +14,9 @@ Use this skill when the user asks about:
 - Current credits balance
 - Credits transactions history
 - Deposits records
-- Creating a recharge (deposit) order
+- Creating a recharge (deposit) order (raw `credits` amount **or** by selecting a package)
 - Listing available recharge packages
-- Creating a deposit by selecting a package
+- Creating a deposit by selecting a package (`package_id` / slug from the packages list)
 
 ## Requirements
 
@@ -37,6 +37,11 @@ Read from environment (never ask user to paste keys):
 ```bash
 BASE="${HUBBLE_API_BASE_URL%/}"
 ```
+
+## Package semantics (important)
+
+- `GET /credits/packages` returns **`credits` as the total amount credited on a successful paid deposit** for that tier (not a "base" before a bonus).
+- `bonus_percent` (if present) is **marketing / UI only**; it does **not** change the API math—do not multiply `credits` by the bonus. Omit from field list when missing.
 
 ## Actions
 
@@ -111,13 +116,13 @@ curl -sS --fail-with-body \
   "$BASE/api/v1/credits/packages"
 ```
 
-Response fields per item: `package_id`（套餐 slug，传给按套餐充值接口）、`credits`、`amount_usd`、`currency`、`label`（展示名，如 `"Starter"`）、`is_default`（是否默认推荐套餐）、`sort_order`（展示排序，越小越靠前）。
+Response fields per item: `package_id`（套餐 slug，传给按套餐充值接口）、`credits`（**到账总数**，见上文 Package semantics）、`amount_usd`、`currency`、`label`（展示名，如 `"Starter"`）、`is_default`（是否默认推荐套餐）、`sort_order`（展示排序，越小越靠前）、`bonus_percent`（可选，仅文案/展示，**不参与**金额或积分计算；可能省略）。
 
 ---
 
 ### Create deposit by package — requires confirmation
 
-先调 `GET /credits/packages` 列出可用套餐，让用户选择后再执行。确认时展示：套餐名（`label`）、`credits`、`amount_usd`。
+先调 `GET /credits/packages` 列出可用套餐，让用户选择后再执行。确认时展示：套餐名（`label`）、`credits`、`amount_usd`；如有 `bonus_percent` 可一并说明为营销标注，**不要**在 `credits` 上再乘比例。
 
 ```bash
 curl -sS --fail-with-body \
@@ -128,4 +133,4 @@ curl -sS --fail-with-body \
   -d '{"package_id": "<package_slug>"}'
 ```
 
-Response fields 与 `POST /deposits` 相同：`deposit_id`, `client_reference`, `credits`, `amount_usd`, `currency`, `infini_order_id`, `checkout_url`。
+Response fields 与 `POST /deposits` 相同：`deposit_id`, `client_reference`, `credits`, `amount_usd`, `currency`, `infini_order_id`, `checkout_url`。其中 `credits` 与所选套餐的 `credits` 一致（已含该档总积分，**不因** `bonus_percent` 再变）。
