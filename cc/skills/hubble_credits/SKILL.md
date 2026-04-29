@@ -103,6 +103,9 @@ curl -sS --fail-with-body \
 
 Response fields: `deposit_id`, `client_reference`, `credits`, `amount_usd`, `currency`, `infini_order_id`, `checkout_url` (redirect to Infini checkout page).
 
+When you get the `checkout_url`, please print it in full on a new line, like this:
+Checkout URL: <full_url>
+
 ---
 
 ### List recharge packages
@@ -134,3 +137,6 @@ curl -sS --fail-with-body \
 ```
 
 Response fields 与 `POST /deposits` 相同：`deposit_id`, `client_reference`, `credits`, `amount_usd`, `currency`, `infini_order_id`, `checkout_url`。其中 `credits` 与所选套餐的 `credits` 一致（已含该档总积分，**不因** `bonus_percent` 再变）。
+
+When you get the `checkout_url`, please print it in full on a new line, like this:
+Checkout URL: <full_url>
