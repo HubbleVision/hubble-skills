@@ -5,7 +5,7 @@ description: Use when the user asks about Hubble credits balance, transaction hi
 
 # Hubble Credits Skill
 
-Version: v0.5.2
+Version: v0.6.0
 
 ## When to use
 
